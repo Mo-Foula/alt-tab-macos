@@ -89,6 +89,9 @@ class ControlsTab {
         let showMinimizedWindows = LabelAndControl.makeDropdown(Preferences.indexToName("showMinimizedWindows", index), ShowHowPreference.allCases)
         let showHiddenWindows = LabelAndControl.makeDropdown(Preferences.indexToName("showHiddenWindows", index), ShowHowPreference.allCases)
         let showFullscreenWindows = LabelAndControl.makeDropdown(Preferences.indexToName("showFullscreenWindows", index), ShowHowPreference.allCases.filter { $0 != .showAtTheEnd })
+        
+        let hideAppsWithNoOpenWindows = LabelAndControl.makeDropdown(Preferences.indexToName("hideAppsWithNoOpenWindows", index), ShowHowPreference.allCases.filter { $0 != .showAtTheEnd })
+
         let windowOrder = LabelAndControl.makeDropdown(Preferences.indexToName("windowOrder", index), WindowOrderPreference.allCases)
 
         var holdShortcut = LabelAndControl.makeLabelWithRecorder(NSLocalizedString("Hold", comment: ""), Preferences.indexToName("holdShortcut", index), Preferences.holdShortcut[index], false, labelPosition: .leftWithoutSeparator)
@@ -107,6 +110,7 @@ class ControlsTab {
         table.addRow(TableGroupView.Row(leftTitle: NSLocalizedString("Show minimized windows", comment: ""), rightViews: [showMinimizedWindows]))
         table.addRow(TableGroupView.Row(leftTitle: NSLocalizedString("Show hidden windows", comment: ""), rightViews: [showHiddenWindows]))
         table.addRow(TableGroupView.Row(leftTitle: NSLocalizedString("Show fullscreen windows", comment: ""), rightViews: [showFullscreenWindows]))
+        table.addRow(TableGroupView.Row(leftTitle: NSLocalizedString("Hide apps with no open window", comment: ""), rightViews: [hideAppsWithNoOpenWindows]))
         table.addRow(TableGroupView.Row(leftTitle: NSLocalizedString("Order windows by", comment: ""), rightViews: [windowOrder]))
         table.fit()
         return (holdShortcut, nextWindowShortcut, table)

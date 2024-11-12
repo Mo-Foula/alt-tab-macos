@@ -13,7 +13,7 @@ class Windows {
         list.sort {
             // separate buckets for these types of windows
             if $0.isWindowlessApp != $1.isWindowlessApp {
-                return $1.isWindowlessApp
+                return Preferences.hideAppsWithNoOpenWindows[App.app.shortcutIndex] == .showAtTheEnd ? $1.isWindowlessApp : $0.isWindowlessApp
             }
             if Preferences.showHiddenWindows[App.app.shortcutIndex] == .showAtTheEnd && $0.isHidden != $1.isHidden {
                return $1.isHidden
@@ -71,7 +71,7 @@ class Windows {
         var index: Int? = nil
         var lastFocusOrderMin = Int.max
         Windows.list.enumerated().forEach {
-            if !$0.element.isWindowlessApp && $0.element.lastFocusOrder < lastFocusOrderMin {
+            if (!$0.element.isWindowlessApp || Preferences.hideAppsWithNoOpenWindows[App.app.shortcutIndex] != .hide) && $0.element.lastFocusOrder < lastFocusOrderMin {
                 lastFocusOrderMin = $0.element.lastFocusOrder
                 index = $0.offset
             }
@@ -285,7 +285,7 @@ class Windows {
             BackgroundWork.mainQueueConcurrentWorkQueue.async {
                 if currentIndex < list.count {
                     let window = list[currentIndex]
-                    if window.shouldShowTheUser && !window.isWindowlessApp {
+                    if window.shouldShowTheUser && (!$0.element.isWindowlessApp || Preferences.hideAppsWithNoOpenWindows[App.app.shortcutIndex] != .hide) {
                         window.refreshThumbnail()
                     }
                     refreshThumbnailsAsync(screen, currentIndex + 1)
@@ -326,7 +326,7 @@ class Windows {
             } ?? false) &&
             !(Preferences.appsToShow[App.app.shortcutIndex] == .active && window.application.runningApplication.processIdentifier != NSWorkspace.shared.frontmostApplication?.processIdentifier) &&
             !(!(Preferences.showHiddenWindows[App.app.shortcutIndex] != .hide) && window.isHidden) &&
-            ((!Preferences.hideWindowlessApps && window.isWindowlessApp) ||
+            ((Preferences.hideAppsWithNoOpenWindows[App.app.shortcutIndex] != .hide && window.isWindowlessApp) ||
                 !window.isWindowlessApp &&
                 !(!(Preferences.showFullscreenWindows[App.app.shortcutIndex] != .hide) && window.isFullscreen) &&
                 !(!(Preferences.showMinimizedWindows[App.app.shortcutIndex] != .hide) && window.isMinimized) &&
